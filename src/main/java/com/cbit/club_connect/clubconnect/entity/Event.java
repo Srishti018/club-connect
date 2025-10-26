@@ -1,42 +1,43 @@
 package com.cbit.club_connect.clubconnect.entity;
 
 import jakarta.persistence.*;
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "event")
+@Table(name = "event") // keep your real table name
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")              // capital I
     private Long id;
 
-    private String name;
-    private Date date;
-    private Time time;
+    @Column(name = "name", nullable = false)
+    private String title;             // map to "name" column
+
+    @Column(name = "Club_Id", nullable = false) // capital C + I
+    private Long clubId;
+
+    @Column(name = "venue")
     private String venue;
 
-    @ManyToOne
-    @JoinColumn(name = "club_id")
-    private Club club;
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
 
-    // Getters & Setters
+    // --- getters/setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public Date getDate() { return date; }
-    public void setDate(Date date) { this.date = date; }
-
-    public Time getTime() { return time; }
-    public void setTime(Time time) { this.time = time; }
+    public Long getClubId() { return clubId; }
+    public void setClubId(Long clubId) { this.clubId = clubId; }
 
     public String getVenue() { return venue; }
     public void setVenue(String venue) { this.venue = venue; }
 
-    public Club getClub() { return club; }
-    public void setClub(Club club) { this.club = club; }
+    public LocalDateTime getStartAt() { return startAt; }
+    public void setStartAt(LocalDateTime startAt) { this.startAt = startAt; }
 }
+

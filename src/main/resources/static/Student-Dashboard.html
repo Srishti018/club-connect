@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>CBIT – Club Connect</title>
+    <style>
+        :root {
+            --bg:#0b1020; --panel:#0f1629; --muted:#98a2b3; --fg:#e7eaf0;
+            --line:#1f2a44; --accent:#2563eb; --chip:#1e293b;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+            background: radial-gradient(1200px 600px at 20% -10%, #1e3a8a33, transparent),
+            radial-gradient(1000px 500px at 120% 20%, #065f4633, transparent),
+            var(--bg);
+            color:var(--fg);
+            min-height:100vh;
+        }
+        header{
+            padding:18px 20px 10px;
+            border-bottom:1px solid var(--line);
+            background:linear-gradient(180deg, rgba(20,28,48,.7), rgba(15,22,41,.6));
+            position:sticky; top:0; z-index:5;
+        }
+        .sub{color:var(--muted); font-size:14px; margin-top:4px}
+        .container{
+            display:grid; grid-template-columns: 320px 1fr; gap:18px; padding:18px 20px;
+        }
+        .panel{background:var(--panel); border:1px solid var(--line); border-radius:16px;}
+        .clubs{padding:14px}
+        .club{
+            padding:12px; border-radius:12px; border:1px solid transparent; cursor:pointer;
+        }
+        .club:hover{background:#101a32; border-color:#16233d}
+        .club.active{background:#101a32; border-color:#1e3a8a}
+        .club h3{margin:0 0 4px; font-size:16px}
+        .club p{margin:0; color:var(--muted); font-size:13px; line-height:1.35}
+        .events{padding:14px}
+        .toolbar{display:flex; justify-content:space-between; align-items:center; padding:6px 4px 12px}
+        .pill{display:inline-block; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:12px; background:var(--chip)}
+        .event{border:1px solid var(--line); border-radius:14px; padding:12px 12px; margin:10px 0; background:#0e162b}
+        .event h4{margin:0 0 6px; font-size:16px}
+        .meta{color:var(--muted); font-size:13px}
+        .meta span{margin-right:10px}
+        @media (max-width: 900px){ .container{grid-template-columns:1fr} }
+    </style>
+</head>
+<body>
+<header>
+    <h2 style="margin:0">CBIT – Chaitanya Bharathi Institute Of Technology</h2>
+    <div class="sub">CBIT-Club-Connect</div>
+</header>
+
+<div class="container">
+    <!-- LEFT: Clubs -->
+    <aside class="panel clubs">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 6px 8px;">
+            <h3 style="margin:6px 0">Clubs</h3>
+            <button id="allBtn" class="pill" title="Show all upcoming events">All Events</button>
+        </div>
+        <div id="clubsList"></div>
+    </aside>
+
+    <!-- RIGHT: Events -->
+    <main class="panel events">
+        <div class="toolbar">
+            <h3 id="eventsTitle" style="margin:0">Upcoming Events</h3>
+            <span id="count" class="pill">0 events</span>
+        </div>
+        <div id="eventsList"></div>
+    </main>
+</div>
+
+<script>
+    const API = "http://localhost:8080/api/public";
+    const clubsList = document.getElementById('clubsList');
+    const eventsList = document.getElementById('eventsList');
+    const eventsTitle = document.getElementById('eventsTitle');
+    const count = document.getElementById('count');
+    const allBtn = document.getElementById('allBtn');
+
+    let currentClubId = null;
+
+    function fmtDateTime(iso){
+        if(!iso) return '';
+        const d = new Date(iso);
+        return d.toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
+    }
+
+    async function loadClubs(){
+        const res = await fetch(`${API}/clubs`);
+        const clubs = await res.json();
+        clubsList.innerHTML = '';
+        clubs.forEach(c => {
+            const el = document.createElement('div');
+            el.className = 'club';
+            el.innerHTML = `<h3>${c.name}</h3><p>${c.description ?? ''}</p>`;
+            el.addEventListener('click', () => {
+                [...clubsList.children].forEach(x => x.classList.remove('active'));
+                el.classList.add('active');
+                currentClubId = c.id;
+                eventsTitle.textContent = `Events – ${c.name}`;
+                loadEventsForClub(c.id);
+            });
+            clubsList.appendChild(el);
+        });
+    }
+
+    async function loadEventsForClub(clubId){
+        const res = await fetch(`${API}/clubs/${clubId}/events?upcomingOnly=true`);
+        const events = await res.json();
+        renderEvents(events);
+    }
+
+    async function loadAllUpcoming(){
+        currentClubId = null;
+        eventsTitle.textContent = 'Upcoming Events';
+        const res = await fetch(`${API}/events/upcoming`);
+        const events = await res.json();
+        renderEvents(events);
+    }
+
+    function renderEvents(items){
+        eventsList.innerHTML = '';
+        count.textContent = `${items.length} event${items.length !== 1 ? 's' : ''}`;
+        if(items.length === 0){
+            eventsList.innerHTML = `<div class="event"><div class="meta">No upcoming events.</div></div>`;
+            return;
+        }
+        items.forEach(e => {
+            const el = document.createElement('div');
+            el.className = 'event';
+            const by = e.clubName ? `<span>Club: <b>${e.clubName}</b></span>` : '';
+            el.innerHTML = `
+          <h4>${e.title ?? 'Untitled Event'}</h4>
+          <div class="meta">
+            <span>${fmtDateTime(e.dateTime)}</span>
+            <span>Venue: ${e.venue ?? 'TBA'}</span>
+            ${by}
+          </div>
+          <p>${e.description ?? ''}</p>
+        `;
+            eventsList.appendChild(el);
+        });
+    }
+
+    allBtn.addEventListener('click', () => {
+        [...clubsList.children].forEach(x => x.classList.remove('active'));
+        loadAllUpcoming();
+    });
+
+    // init
+    loadClubs();
+    loadAllUpcoming();
+</script>
+</body>
+</html>

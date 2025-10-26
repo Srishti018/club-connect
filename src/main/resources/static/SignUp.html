@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Create account</title>
+    <style>
+        :root { --bg:#0f172a; --card:#111827; --muted:#6b7280; --fg:#e5e7eb; --accent:#2563eb; --accent-2:#1d4ed8; }
+        * { box-sizing:border-box; }
+        body {
+            margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            background: radial-gradient(1200px 600px at 20% -10%, #1f2a5a55, transparent),
+            radial-gradient(1000px 500px at 120% 20%, #064e3b55, transparent), var(--bg);
+            color:var(--fg); display:flex; min-height:100vh; align-items:center; justify-content:center; padding:24px;
+        }
+        .card {
+            width:min(480px, 100%); background:linear-gradient(180deg, #0b1222, #0b0f1a);
+            border:1px solid #1f2937; border-radius:18px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+            padding:28px 24px 24px;
+        }
+        h1 { margin:0 0 6px; font-size:26px; letter-spacing:.2px; }
+        p.sub { margin:0 0 20px; color:#9ca3af; font-size:14px; }
+        label { display:block; font-size:14px; color:#cbd5e1; margin:12px 0 6px; }
+        input {
+            width:100%; padding:12px 12px; border-radius:12px; border:1px solid #243144; background:#0f1624; color:#e5e7eb;
+            outline:none; transition: border .15s, box-shadow .15s;
+        }
+        input:focus { border-color:#35507a; box-shadow:0 0 0 4px #1e3a8a33; }
+        .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .btn {
+            width:100%; margin-top:18px; padding:12px 14px; font-weight:600; font-size:15px;
+            border-radius:12px; border:none; background:linear-gradient(90deg, var(--accent), var(--accent-2));
+            color:white; cursor:pointer; transition: transform .05s ease, filter .15s ease;
+        }
+        .btn:active { transform: translateY(1px); }
+        .muted { margin-top:10px; font-size:14px; color:var(--muted);}
+        .muted a { color:#93c5fd; text-decoration:none; }
+        .muted a:hover { text-decoration:underline; }
+        .hint { font-size:12px; color:#94a3b8; margin-top:6px; }
+        .pw-wrap { position:relative; }
+        .toggle {
+            position:absolute; right:10px; top:50%; transform:translateY(-50%);
+            background:transparent; border:none; color:#9ca3af; cursor:pointer; font-size:12px; padding:4px 6px;
+        }
+        .toast {
+            position: fixed; top:20px; right:20px; padding:12px 14px; border-radius:10px; background:#0b3b0f; color:#d1fae5;
+            border:1px solid #065f46; display:none; z-index:9999;
+        }
+        .toast.error{ background:#3b0b0b; color:#fee2e2; border-color:#7f1d1d; }
+    </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<div class="card">
+    <h1>Create account</h1>
+    <p class="sub">Sign up to continue</p>
+
+    <form id="form">
+        <div class="row">
+            <div>
+                <label for="firstName">First Name</label>
+                <input id="firstName" name="firstName" autocomplete="given-name" required>
+            </div>
+            <div>
+                <label for="lastName">Last Name</label>
+                <input id="lastName" name="lastName" autocomplete="family-name" required>
+            </div>
+        </div>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" autocomplete="email" required>
+
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+            <input id="password" type="password" name="password" minlength="4" required>
+            <button type="button" class="toggle" id="togglePw">Show</button>
+        </div>
+        <div class="hint">For the prototype this is plain text (no special rules).</div>
+
+        <button class="btn" type="submit">Sign Up</button>
+
+        <div class="muted">Already have an account? <a href="/login.html">Log in</a></div>
+    </form>
+</div>
+
+<script>
+    const API_BASE = "http://localhost:8080";
+    const form = document.getElementById('form');
+    const toast = document.getElementById('toast');
+    const toggle = document.getElementById('togglePw');
+    const pw = document.getElementById('password');
+
+    toggle.addEventListener('click', () => {
+        pw.type = pw.type === 'password' ? 'text' : 'password';
+        toggle.textContent = pw.type === 'password' ? 'Show' : 'Hide';
+    });
+
+    function showToast(msg, isError=false){
+        toast.textContent = msg;
+        toast.className = 'toast' + (isError ? ' error' : '');
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 2500);
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const firstName = form.firstName.value.trim();
+        const lastName  = form.lastName.value.trim();
+        const email     = form.email.value.trim().toLowerCase();
+        const password  = form.password.value.trim();
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ firstName, lastName, email, password })
+            });
+
+            if (!res.ok) {
+                const err = await res.text();
+                showToast(err || 'Signup failed', true);
+                return;
+            }
+            const data = await res.json();
+            showToast(`Signup successful! Welcome ${data.firstName || ''}`.trim());
+            // redirect to login after a short delay
+            setTimeout(() => window.location.href = '/login.html', 900);
+        } catch (err) {
+            showToast('Network error. Is the API running?', true);
+        }
+    });
+</script>
+</body>
+</html>

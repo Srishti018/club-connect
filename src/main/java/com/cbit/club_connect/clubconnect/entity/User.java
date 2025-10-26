@@ -8,110 +8,53 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")                   // your DB shows "Id"
     private Long id;
 
-    @Column(name = "firstname", nullable = false)
-    private String firstname;
-
-    @Column(name = "lastname", nullable = false)
-    private String lastname;
-
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "Password", nullable = false) // DB column is "Password" (capital P)
     private String password;
+
+    @Column(name = "Rolenum")
+    private String roleNum;
+
+    @Column(name = "firstname")
+    private String firstName;
+
+    @Column(name = "lastname")
+    private String lastName;
 
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "requested_club_id")
-    private Long requestedClubId;
+    // -------- Getters / Setters --------
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // Fields used only for club verification during Club Head signup
-    @Transient
-    private String clubEmail;
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    @Transient
-    private String clubPassword;
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    // 🔹 Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public String getRoleNum() { return roleNum; }
+    public void setRoleNum(String roleNum) { this.roleNum = roleNum; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getFirstname() {
-        return firstname;
-    }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Long getRequestedClubId() {
-        return requestedClubId;
-    }
-
-    public void setRequestedClubId(Long requestedClubId) {
-        this.requestedClubId = requestedClubId;
-    }
-
-    public String getClubEmail() {
-        return clubEmail;
-    }
-
-    public void setClubEmail(String clubEmail) {
-        this.clubEmail = clubEmail;
-    }
-
-    public String getClubPassword() {
-        return clubPassword;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
+
