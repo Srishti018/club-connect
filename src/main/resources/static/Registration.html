@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Event Registration</title>
+    <style>
+        :root {
+          --bg: #f0f5ff;
+          --card: #ffffff;
+          --text: #0f172a;
+          --muted: #475569;
+          --line: #e2e8f0;
+          --primary: #2563eb;
+          --primary-hover: #1d4ed8;
+          --chip-bg: #dbeafe;
+          --chip-border: #93c5fd;
+          --ok: #0f5132;
+          --okb: #d1e7dd;
+          --err: #842029;
+          --errb: #f8d7da;
+        }
+        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { background: var(--bg); margin: 0; color: var(--text); }
+        .wrap { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+
+        .card {
+          background: var(--card);
+          border-radius: 18px;
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.1);
+          overflow: hidden;
+        }
+
+        .eventbar {
+          background: var(--primary);
+          color: white;
+          padding: 20px 24px;
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .eventbar h1 { margin: 0; font-size: 22px; }
+        .eventbar .meta { font-size: 14px; opacity: 0.9; }
+        .badge {
+          background: var(--chip-bg);
+          color: var(--primary);
+          padding: 6px 12px;
+          border-radius: 12px;
+          font-weight: 600;
+          border: 1px solid var(--chip-border);
+        }
+
+        .panel { padding: 28px; }
+        h2 { margin-top: 0; color: var(--primary); }
+        form {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+        }
+        label { font-weight: 600; display: block; margin-bottom: 6px; }
+        input, select {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          font-size: 15px;
+        }
+        input:focus, select:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+          outline: none;
+        }
+        .full { grid-column: 1 / -1; }
+        .btn {
+          background: var(--primary);
+          color: #fff;
+          border: none;
+          padding: 12px 16px;
+          border-radius: 10px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .banner {
+          padding: 12px 14px;
+          border-radius: 8px;
+          font-weight: 600;
+          margin-bottom: 16px;
+          display: none;
+        }
+        .banner.ok { background: var(--okb); color: var(--ok); display: block; }
+        .banner.err { background: var(--errb); color: var(--err); display: block; }
+        .back {
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          margin-bottom: 18px;
+          color: var(--primary);
+          font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <a class="back" href="student-dashboard.html">← Back to Dashboard</a>
+
+    <section class="card">
+        <div class="eventbar">
+            <div>
+                <h1 id="evtTitle">Loading event…</h1>
+                <div id="evtMeta" class="meta"></div>
+            </div>
+            <div id="evtBadge" class="badge" style="display:none;"></div>
+        </div>
+
+        <div class="panel">
+            <h2>Event Registration</h2>
+            <div id="banner" class="banner"></div>
+
+            <form id="registrationForm" novalidate>
+                <div>
+                    <label for="fullName">Full Name</label>
+                    <input id="fullName" placeholder="e.g. Aditi Sharma" required>
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input id="email" type="email" placeholder="e.g. aditi@cbit.ac.in">
+                </div>
+                <div>
+                    <label for="roll">Roll Number</label>
+                    <input id="roll" placeholder="e.g. 16012XXXXX" required>
+                </div>
+                <div>
+                    <label for="year">Year of Study</label>
+                    <select id="year">
+                        <option value="">Select</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+                <div class="full">
+                    <label for="branch">Branch</label>
+                    <select id="branch">
+                        <option value="">Select branch</option>
+                        <option value="CSE">CSE</option>
+                        <option value="CSM">CSM</option>
+                        <option value="AIML">AIML</option>
+                        <option value="AIDS">AIDS</option>
+                        <option value="IT">IT</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="MECH">MECH</option>
+                        <option value="CIVIL">CIVIL</option>
+                        <option value="CHEM">CHEM</option>
+                        <option value="BIOTECH">BIOTECH</option>
+                    </select>
+                </div>
+                <div class="full">
+                    <label for="section">Section</label>
+                    <select id="section">
+                        <option value="">Select section</option>
+                        <option value="1">Section 1</option>
+                        <option value="2">Section 2</option>
+                        <option value="3">Section 3</option>
+                        <option value="4">Section 4</option>
+                        <option value="5">Section 5</option>
+                    </select>
+                </div>
+                <div class="full">
+                    <button id="submitBtn" class="btn" type="submit">Submit Registration</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<script>
+    const $ = s => document.querySelector(s);
+    const banner = $('#banner');
+    const eventId = new URLSearchParams(location.search).get('eventId');
+
+    function showBanner(msg, type) {
+      banner.textContent = msg;
+      banner.className = 'banner ' + (type === 'ok' ? 'ok' : 'err');
+    }
+
+    async function getJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }
+
+    async function loadEvent() {
+      if (!eventId) {
+        $('#evtTitle').textContent = 'Invalid event';
+        return showBanner('Missing eventId in URL', 'err');
+      }
+      try {
+        const events = await getJson('/api/public/events');
+        const evt = events.find(e => e.id == eventId);
+        if (!evt) throw new Error('Not found');
+
+        $('#evtTitle').textContent = evt.title || evt.name;
+        $('#evtMeta').textContent = `${evt.dateTime || evt.startAt || ''} | ${evt.venue || ''} | ${evt.clubName || ''}`;
+        if (evt.activityPoints) {
+          const badge = $('#evtBadge');
+          badge.textContent = `Activity Points: ${evt.activityPoints}`;
+          badge.style.display = 'inline-block';
+        }
+        window._evt = evt;
+      } catch (err) {
+        showBanner('Could not load event details', 'err');
+      }
+    }
+
+    $('#registrationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = $('#fullName').value.trim();
+      const email = $('#email').value.trim();
+      const roll = $('#roll').value.trim();
+      const year = $('#year').value;
+      const branch = $('#branch').value;
+      const section = $('#section').value;
+
+      if (!eventId) return showBanner('Invalid event.', 'err');
+      if (!name || !roll) return showBanner('Please fill all required fields.', 'err');
+
+      const payload = {
+        eventId: Number(eventId),
+        eventName: window._evt?.title || window._evt?.name || null,
+        name,
+        fullName: name,
+        email,
+        rollNum: roll,
+        roll,
+        yearOfStudy: year ? Number(year) : null,
+        branch,
+        section
+      };
+
+      const btn = $('#submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch('/api/public/registrations', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const txt = await res.text();
+        if (!res.ok) throw new Error(txt || 'HTTP ' + res.status);
+        showBanner('Registration successful!', 'ok');
+      } catch (err) {
+        showBanner('Registration failed: ' + err.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Registration';
+      }
+    });
+
+    loadEvent();
+</script>
+</body>
+</html>

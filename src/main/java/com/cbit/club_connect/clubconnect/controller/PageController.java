@@ -15,4 +15,13 @@ public class PageController {
     public String loginPage() {
         return "login";  // maps to templates/login.html
     }
+
+
+    @GetMapping("/register.html")
+    public String alias() { return "redirect:/registration.html"; }
+
+    // optional: other pages
+    @GetMapping("/student-dashboard")
+    public String studentDashboard() { return "student-dashboard"; }
+
 }

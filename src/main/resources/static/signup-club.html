@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Club Sign Up</title>
+    <style>
+        body {
+          margin: 0;
+          font-family: ui-sans-serif, system-ui;
+          background: linear-gradient(120deg, #1e3a8a, #0b1020);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          color: #fff;
+        }
+        .card {
+          background: #0f1629;
+          padding: 30px;
+          border-radius: 16px;
+          width: 400px;
+          box-shadow: 0 0 20px rgba(0,0,0,.3);
+        }
+        h1 {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        label {
+          display: block;
+          margin-top: 10px;
+        }
+        input, textarea {
+          width: 100%;
+          padding: 10px;
+          border-radius: 10px;
+          border: none;
+          margin-top: 5px;
+          background: #151c2f;
+          color: white;
+        }
+        textarea { resize: none; height: 80px; }
+        .btn {
+          width: 100%;
+          margin-top: 20px;
+          padding: 12px;
+          background: #2563eb;
+          border: none;
+          border-radius: 10px;
+          color: white;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .btn:hover { background: #1d4ed8; }
+        a { color: #60a5fa; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Club Sign Up</h1>
+    <form id="clubForm">
+        <label>Club ID</label>
+        <input type="number" id="clubId" required>
+
+        <label>Club Name</label>
+        <input type="text" id="clubName" required>
+
+        <label>Club Email</label>
+        <input type="email" id="clubEmail" required>
+
+        <label>Description</label>
+        <textarea id="description" required></textarea>
+
+        <label>Password</label>
+        <input type="password" id="clubPassword" required>
+
+        <button type="submit" class="btn">Sign Up</button>
+        <p style="text-align:center; margin-top:10px;">Already have an account? <a href="/login.html">Login</a></p>
+    </form>
+</div>
+
+<script>
+    const API = "http://localhost:8080/api/auth/signup/club";
+
+    document.getElementById("clubForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        id: parseInt(document.getElementById("clubId").value),
+        name: document.getElementById("clubName").value.trim(),
+        clubEmail: document.getElementById("clubEmail").value.trim().toLowerCase(),
+        description: document.getElementById("description").value.trim(),
+        clubPassword: document.getElementById("clubPassword").value.trim()
+      };
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          alert("✅ Club registered successfully!");
+          window.location.href = "/login.html";
+        } else {
+          const errorText = await res.text();
+          alert("❌ Error: " + errorText);
+        }
+      } catch (err) {
+        alert("⚠️ Could not connect to server. Please check backend is running.");
+        console.error(err);
+      }
+    });
+</script>
+</body>
+</html>
+
+

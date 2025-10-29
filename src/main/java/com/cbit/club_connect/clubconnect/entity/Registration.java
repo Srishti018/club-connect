@@ -4,39 +4,80 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "registration",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"event_id", "user_id"}))
+@Table(name = "registration")
 public class Registration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    @Column(name = "Event_Id")
+    private Long eventId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "event_name")         // denormalized, optional
+    private String eventName;
 
-    private Timestamp regDate;
+    @Column(name = "user_id")
+    private Long userId;
 
-    private String status; // e.g., PENDING, APPROVED, REJECTED
+    @Column(name = "Reg_date", insertable = false, updatable = false)
+    private Timestamp regDate;            // default CURRENT_TIMESTAMP in DB
 
-    // Getters & Setters
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "name")
+    private String name;                  // <-- this was NULL earlier
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "roll_num")
+    private String rollNum;
+
+    @Column(name = "year_of_study")
+    private Integer yearOfStudy;
+
+    @Column(name = "branch")
+    private String branch;
+
+    @Column(name = "section")
+    private String section;
+
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Event getEvent() { return event; }
-    public void setEvent(Event event) { this.event = event; }
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public String getEventName() { return eventName; }
+    public void setEventName(String eventName) { this.eventName = eventName; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public Timestamp getRegDate() { return regDate; }
     public void setRegDate(Timestamp regDate) { this.regDate = regDate; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getRollNum() { return rollNum; }
+    public void setRollNum(String rollNum) { this.rollNum = rollNum; }
+
+    public Integer getYearOfStudy() { return yearOfStudy; }
+    public void setYearOfStudy(Integer yearOfStudy) { this.yearOfStudy = yearOfStudy; }
+
+    public String getBranch() { return branch; }
+    public void setBranch(String branch) { this.branch = branch; }
+
+    public String getSection() { return section; }
+    public void setSection(String section) { this.section = section; }
 }

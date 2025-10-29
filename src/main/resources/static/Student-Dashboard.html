@@ -1,159 +1,208 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>CBIT – Club Connect</title>
+    <meta charset="utf-8" />
+    <title>CBIT – Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         :root {
-            --bg:#0b1020; --panel:#0f1629; --muted:#98a2b3; --fg:#e7eaf0;
-            --line:#1f2a44; --accent:#2563eb; --chip:#1e293b;
+          --bg:#0f1b2b; --panel:#12233a; --ink:#e8f0ff; --muted:#a9b7d1;
+          --accent:#1e66ff; --accent-2:#2dd4bf; --danger:#ef4444; --ok:#10b981;
+          --border:rgba(255,255,255,.08);
         }
         *{box-sizing:border-box}
         body{
-            margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-            background: radial-gradient(1200px 600px at 20% -10%, #1e3a8a33, transparent),
-            radial-gradient(1000px 500px at 120% 20%, #065f4633, transparent),
-            var(--bg);
-            color:var(--fg);
-            min-height:100vh;
+          margin:0; background:var(--bg); color:var(--ink);
+          font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial;
         }
-        header{
-            padding:18px 20px 10px;
-            border-bottom:1px solid var(--line);
-            background:linear-gradient(180deg, rgba(20,28,48,.7), rgba(15,22,41,.6));
-            position:sticky; top:0; z-index:5;
+        .wrap{max-width:1200px; margin:28px auto; padding:0 20px}
+        header h1{margin:0 0 6px; font-size:32px; color:var(--accent);}
+        header small{color:var(--muted)}
+        .grid{display:grid; grid-template-columns:360px 1fr; gap:24px; margin-top:24px}
+        @media (max-width:980px){.grid{grid-template-columns:1fr}}
+
+        .card{background:var(--panel); border:1px solid var(--border);
+          border-radius:14px; padding:18px 18px 8px}
+        .card h2{margin:0 0 12px; font-size:22px; color:var(--accent);}
+        .subtle{color:var(--muted)}
+
+        .club{padding:12px 8px; border-bottom:1px dashed var(--border); cursor:pointer; transition:background .2s ease;}
+        .club:hover{background:rgba(30,102,255,.1);}
+        .club-name{font-weight:700}
+        .club-desc{color:var(--muted); margin-top:4px; font-size:14px}
+
+        .evt{padding:16px; border:1px solid var(--border); border-radius:12px;
+          margin:12px 0; background:rgba(255,255,255,.02); cursor:pointer;
+          transition:background .2s ease;}
+        .evt:hover{background:rgba(30,102,255,.1);}
+        .evt-title{font-weight:800; font-size:20px; margin:0 0 8px}
+        .evt-meta{color:var(--muted); font-size:14px; display:flex; gap:18px; flex-wrap:wrap}
+        .row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px}
+        .btn{
+          appearance:none; border:0; background:var(--accent); color:white;
+          padding:10px 16px; border-radius:10px; font-weight:700;
+          cursor:pointer; transition:transform .06s ease,opacity .2s;
         }
-        .sub{color:var(--muted); font-size:14px; margin-top:4px}
-        .container{
-            display:grid; grid-template-columns: 320px 1fr; gap:18px; padding:18px 20px;
+        .btn:active{transform:translateY(1px)}
+        .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--border)}
+        .empty{color:var(--muted); padding:18px 12px}
+        .error{background:rgba(239,68,68,.12); border:1px dashed rgba(239,68,68,.5);
+          color:#fecaca; padding:12px 14px; border-radius:10px; margin:12px 0}
+        .header-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+        .count{color:var(--muted); font-size:14px}
+
+        /* Modal */
+        .modal {
+          position:fixed; top:0; left:0; width:100%; height:100%;
+          background:rgba(0,0,0,0.6); display:none; align-items:center;
+          justify-content:center; z-index:1000;
         }
-        .panel{background:var(--panel); border:1px solid var(--line); border-radius:16px;}
-        .clubs{padding:14px}
-        .club{
-            padding:12px; border-radius:12px; border:1px solid transparent; cursor:pointer;
+        .modal-content {
+          background:var(--panel); border-radius:12px; padding:24px; max-width:600px;
+          box-shadow:0 0 20px rgba(0,0,0,0.4); position:relative;
         }
-        .club:hover{background:#101a32; border-color:#16233d}
-        .club.active{background:#101a32; border-color:#1e3a8a}
-        .club h3{margin:0 0 4px; font-size:16px}
-        .club p{margin:0; color:var(--muted); font-size:13px; line-height:1.35}
-        .events{padding:14px}
-        .toolbar{display:flex; justify-content:space-between; align-items:center; padding:6px 4px 12px}
-        .pill{display:inline-block; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:12px; background:var(--chip)}
-        .event{border:1px solid var(--line); border-radius:14px; padding:12px 12px; margin:10px 0; background:#0e162b}
-        .event h4{margin:0 0 6px; font-size:16px}
-        .meta{color:var(--muted); font-size:13px}
-        .meta span{margin-right:10px}
-        @media (max-width: 900px){ .container{grid-template-columns:1fr} }
+        .modal h3{margin-top:0; color:var(--accent);}
+        .modal p{color:var(--ink);}
+        .close-btn {
+          background:transparent; color:var(--muted); border:0; font-size:20px;
+          position:absolute; top:20px; right:30px; cursor:pointer;
+        }
     </style>
 </head>
 <body>
-<header>
-    <h2 style="margin:0">CBIT – Chaitanya Bharathi Institute Of Technology</h2>
-    <div class="sub">CBIT-Club-Connect</div>
-</header>
+<div class="wrap">
+    <header>
+        <h1>Student Dashboard — Upcoming Events</h1>
+        <small class="subtle">CBIT-Club-Connect</small>
+    </header>
 
-<div class="container">
-    <!-- LEFT: Clubs -->
-    <aside class="panel clubs">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 6px 8px;">
-            <h3 style="margin:6px 0">Clubs</h3>
-            <button id="allBtn" class="pill" title="Show all upcoming events">All Events</button>
-        </div>
-        <div id="clubsList"></div>
-    </aside>
+    <section class="grid">
+        <!-- Clubs Section -->
+        <aside class="card" id="clubsCard">
+            <div class="header-row">
+                <h2>Clubs</h2>
+                <button class="btn ghost" id="btnAllEvents">All Events</button>
+            </div>
+            <div id="clubsList" class="list"><div class="empty">Loading clubs…</div></div>
+        </aside>
 
-    <!-- RIGHT: Events -->
-    <main class="panel events">
-        <div class="toolbar">
-            <h3 id="eventsTitle" style="margin:0">Upcoming Events</h3>
-            <span id="count" class="pill">0 events</span>
-        </div>
-        <div id="eventsList"></div>
-    </main>
+        <!-- Events Section -->
+        <main class="card">
+            <div class="header-row">
+                <h2>Upcoming Events</h2>
+                <div class="count"><span id="eventsCount">0</span> events</div>
+            </div>
+            <div id="eventsHost"><div class="empty">Loading events…</div></div>
+        </main>
+    </section>
+</div>
+
+<!-- Modal for Event Description -->
+<div class="modal" id="eventModal">
+    <div class="modal-content">
+        <button class="close-btn" id="closeModal">&times;</button>
+        <h3 id="modalTitle"></h3>
+        <p id="modalDescription"></p>
+    </div>
 </div>
 
 <script>
-    const API = "http://localhost:8080/api/public";
-    const clubsList = document.getElementById('clubsList');
-    const eventsList = document.getElementById('eventsList');
-    const eventsTitle = document.getElementById('eventsTitle');
-    const count = document.getElementById('count');
-    const allBtn = document.getElementById('allBtn');
+    const clubsHost = document.getElementById('clubsList');
+    const eventsHost = document.getElementById('eventsHost');
+    const eventsCount = document.getElementById('eventsCount');
+    const btnAllEvents = document.getElementById('btnAllEvents');
+    const modal = document.getElementById('eventModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const closeModal = document.getElementById('closeModal');
 
-    let currentClubId = null;
+    let allEvents = [];
 
-    function fmtDateTime(iso){
-        if(!iso) return '';
-        const d = new Date(iso);
-        return d.toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
+    const fmt = new Intl.DateTimeFormat(undefined, {dateStyle:'medium', timeStyle:'short'});
+    const toLocal = dt => { try { return fmt.format(new Date(dt)); } catch { return dt || ''; } };
+    const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls)e.className=cls; if(text)e.textContent=text; return e; };
+    const showError = (host, text) => { host.innerHTML=''; host.appendChild(el('div','error',text)); };
+
+    function renderClubs(clubs){
+      clubsHost.innerHTML='';
+      if(!clubs?.length){ clubsHost.appendChild(el('div','empty','No clubs configured.')); return; }
+
+      clubs.forEach(c=>{
+        const row=el('div','club');
+        row.appendChild(el('div','club-name',c.name||'Club'));
+        row.appendChild(el('div','club-desc',c.description||''));
+        row.addEventListener('click', ()=> filterEventsByClub(c.name));
+        clubsHost.appendChild(row);
+      });
+    }
+
+    function renderEvents(list){
+      eventsHost.innerHTML='';
+      eventsCount.textContent=list?.length??0;
+      if(!list?.length){ eventsHost.appendChild(el('div','empty','No upcoming events.')); return; }
+
+      list.forEach(e=>{
+        const card=el('div','evt');
+        card.addEventListener('click',()=>{
+          modal.style.display='flex';
+          modalTitle.textContent=e.title||'Event';
+          modalDescription.textContent=e.description||'No description available.';
+        });
+
+        const title=el('div','evt-title',e.title||'Event');
+        card.appendChild(title);
+
+        const meta=el('div','evt-meta');
+        if(e.dateTime) meta.appendChild(el('span','',`Date: ${toLocal(e.dateTime)}`));
+        if(e.venue) meta.appendChild(el('span','',`Venue: ${e.venue}`));
+        if(e.clubName) meta.appendChild(el('span','',`Club: ${e.clubName}`));
+        if(e.activityPoints!=null) meta.appendChild(el('span','',`Activity Points: ${e.activityPoints}`));
+        card.appendChild(meta);
+
+        const actions=el('div','row');
+        const reg=el('button','btn','Register');
+        reg.addEventListener('click',(ev)=>{
+          ev.stopPropagation();
+          if(!e.id){ alert('Invalid event.'); return; }
+          window.location.href=`registration.html?eventId=${encodeURIComponent(e.id)}`;
+        });
+        actions.appendChild(reg);
+        card.appendChild(actions);
+        eventsHost.appendChild(card);
+      });
+    }
+
+    function filterEventsByClub(clubName){
+      const filtered = allEvents.filter(e => e.clubName === clubName);
+      renderEvents(filtered);
     }
 
     async function loadClubs(){
-        const res = await fetch(`${API}/clubs`);
-        const clubs = await res.json();
-        clubsList.innerHTML = '';
-        clubs.forEach(c => {
-            const el = document.createElement('div');
-            el.className = 'club';
-            el.innerHTML = `<h3>${c.name}</h3><p>${c.description ?? ''}</p>`;
-            el.addEventListener('click', () => {
-                [...clubsList.children].forEach(x => x.classList.remove('active'));
-                el.classList.add('active');
-                currentClubId = c.id;
-                eventsTitle.textContent = `Events – ${c.name}`;
-                loadEventsForClub(c.id);
-            });
-            clubsList.appendChild(el);
-        });
+      try{
+        const r=await fetch('/api/public/clubs');
+        if(!r.ok) throw new Error(`HTTP ${r.status}`);
+        renderClubs(await r.json());
+      }catch(err){ showError(clubsHost,`Failed to load clubs: ${err.message}`); }
     }
 
-    async function loadEventsForClub(clubId){
-        const res = await fetch(`${API}/clubs/${clubId}/events?upcomingOnly=true`);
-        const events = await res.json();
-        renderEvents(events);
+    async function loadEvents(){
+      try{
+        const r=await fetch('/api/public/events');
+        if(!r.ok) throw new Error(`HTTP ${r.status}`);
+        allEvents = await r.json();
+        renderEvents(allEvents);
+      }catch(err){
+        showError(eventsHost,`Failed to load upcoming events: ${err.message}`);
+        eventsCount.textContent=0;
+      }
     }
 
-    async function loadAllUpcoming(){
-        currentClubId = null;
-        eventsTitle.textContent = 'Upcoming Events';
-        const res = await fetch(`${API}/events/upcoming`);
-        const events = await res.json();
-        renderEvents(events);
-    }
+    closeModal.addEventListener('click',()=>modal.style.display='none');
+    modal.addEventListener('click',(e)=>{if(e.target===modal)modal.style.display='none';});
+    btnAllEvents.addEventListener('click',()=>renderEvents(allEvents));
 
-    function renderEvents(items){
-        eventsList.innerHTML = '';
-        count.textContent = `${items.length} event${items.length !== 1 ? 's' : ''}`;
-        if(items.length === 0){
-            eventsList.innerHTML = `<div class="event"><div class="meta">No upcoming events.</div></div>`;
-            return;
-        }
-        items.forEach(e => {
-            const el = document.createElement('div');
-            el.className = 'event';
-            const by = e.clubName ? `<span>Club: <b>${e.clubName}</b></span>` : '';
-            el.innerHTML = `
-          <h4>${e.title ?? 'Untitled Event'}</h4>
-          <div class="meta">
-            <span>${fmtDateTime(e.dateTime)}</span>
-            <span>Venue: ${e.venue ?? 'TBA'}</span>
-            ${by}
-          </div>
-          <p>${e.description ?? ''}</p>
-        `;
-            eventsList.appendChild(el);
-        });
-    }
-
-    allBtn.addEventListener('click', () => {
-        [...clubsList.children].forEach(x => x.classList.remove('active'));
-        loadAllUpcoming();
-    });
-
-    // init
     loadClubs();
-    loadAllUpcoming();
+    loadEvents();
 </script>
 </body>
 </html>

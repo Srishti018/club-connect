@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>CBIT – Club Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+          --bg:#0f1b2b; --panel:#12233a; --ink:#e8f0ff; --muted:#a9b7d1;
+          --accent:#1e66ff; --ok:#10b981; --danger:#ef4444; --border:rgba(255,255,255,.08);
+        }
+        *{box-sizing:border-box}
+        body{margin:0; background:var(--bg); color:var(--ink);
+          font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial;}
+        .wrap{max-width:1000px; margin:28px auto; padding:0 20px}
+        header h1{margin:0 0 6px; font-size:30px; color:var(--accent);}
+        header small{color:var(--muted)}
+
+        .card{background:var(--panel); border:1px solid var(--border);
+          border-radius:14px; padding:20px; margin-top:24px}
+        .card h2{margin:0 0 16px; color:var(--accent)}
+        label{display:block; margin:8px 0 4px; font-weight:600}
+        input,textarea,select{
+          width:100%; padding:10px; border:1px solid var(--border);
+          border-radius:8px; background:#0f1b2b; color:var(--ink);
+        }
+        textarea{resize:vertical; min-height:80px}
+        .btn{
+          background:var(--accent); color:white; border:0; padding:10px 16px;
+          border-radius:10px; cursor:pointer; font-weight:700; margin-top:10px;
+        }
+        .btn.danger{background:var(--danger)}
+        .events-list{margin-top:20px}
+        .evt{border:1px solid var(--border); border-radius:12px;
+          padding:12px; margin:10px 0; background:rgba(255,255,255,.02);}
+        .evt-title{font-weight:700; font-size:18px}
+        .evt-meta{font-size:14px; color:var(--muted)}
+        .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+        .error{background:rgba(239,68,68,.12); border:1px dashed rgba(239,68,68,.5);
+          color:#fecaca; padding:12px; border-radius:10px; margin:10px 0}
+        .success{background:rgba(16,185,129,.15); border:1px dashed rgba(16,185,129,.4);
+          color:#6ee7b7; padding:12px; border-radius:10px; margin:10px 0}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>Club Dashboard</h1>
+        <small class="subtle">Manage your club’s events</small>
+    </header>
+
+    <!-- Add Event Form -->
+    <section class="card">
+        <h2>Add New Event</h2>
+        <form id="addEventForm">
+            <label for="name">Event Name</label>
+            <input type="text" id="name" required />
+
+            <label for="venue">Venue</label>
+            <input type="text" id="venue" required />
+
+            <label for="date">Date</label>
+            <input type="date" id="date" required />
+
+            <label for="time">Time</label>
+            <input type="time" id="time" required />
+
+            <label for="points">Activity Points</label>
+            <input type="number" id="points" min="0" />
+
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Describe your event..."></textarea>
+
+            <button type="submit" class="btn">Add Event</button>
+        </form>
+        <div id="formMsg"></div>
+    </section>
+
+    <!-- Events List -->
+    <section class="card">
+        <h2>Your Events</h2>
+        <div id="eventsList" class="events-list"><div class="empty">Loading events…</div></div>
+    </section>
+</div>
+
+<script>
+    const API_URL = "/api/events"; // backend endpoint
+    const CLUB_ID = 1; // 🔹 replace with logged-in club’s ID dynamically (from session/login)
+    const form = document.getElementById('addEventForm');
+    const msg = document.getElementById('formMsg');
+    const eventsList = document.getElementById('eventsList');
+
+    function showMessage(text, type='success') {
+      msg.innerHTML = `<div class="${type}">${text}</div>`;
+      setTimeout(()=> msg.innerHTML='', 3000);
+    }
+
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/public/events');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const allEvents = await res.json();
+        const clubEvents = allEvents.filter(e => e.clubId === CLUB_ID);
+        renderEvents(clubEvents);
+      } catch (err) {
+        eventsList.innerHTML = `<div class="error">Failed to load events: ${err.message}</div>`;
+      }
+    }
+
+    function renderEvents(list) {
+      eventsList.innerHTML = '';
+      if (!list?.length) {
+        eventsList.innerHTML = `<div class="empty">No events added yet.</div>`;
+        return;
+      }
+
+      list.forEach(e => {
+        const card = document.createElement('div');
+        card.className = 'evt';
+        card.innerHTML = `
+          <div class="evt-title">${e.name}</div>
+          <div class="evt-meta">📍 ${e.venue || 'N/A'} | 🗓️ ${e.startAt ? new Date(e.startAt).toLocaleString() : ''} | 🎯 Points: ${e.activityPoints ?? 0}</div>
+          <p>${e.description || ''}</p>
+          <div class="row">
+            <button class="btn" onclick="editEvent(${e.id})">Edit</button>
+            <button class="btn danger" onclick="deleteEvent(${e.id})">Delete</button>
+          </div>
+        `;
+        eventsList.appendChild(card);
+      });
+    }
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const data = {
+        name: document.getElementById('name').value,
+        venue: document.getElementById('venue').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        clubId: CLUB_ID,
+        activityPoints: parseInt(document.getElementById('points').value || 0),
+        description: document.getElementById('description').value,
+        startAt: new Date(`${date.value}T${time.value}`).toISOString()
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        showMessage('✅ Event added successfully!');
+        form.reset();
+        loadEvents();
+      } catch (err) {
+        showMessage(`❌ Failed: ${err.message}`, 'error');
+      }
+    });
+
+    async function deleteEvent(id) {
+      if (!confirm('Delete this event?')) return;
+      try {
+        const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(await res.text());
+        showMessage('🗑️ Event deleted.');
+        loadEvents();
+      } catch (err) {
+        showMessage(`Failed: ${err.message}`, 'error');
+      }
+    }
+
+    async function editEvent(id) {
+      alert('Edit event feature coming soon!'); // You can later open a modal for editing
+    }
+
+    loadEvents();
+</script>
+</body>
+</html>
