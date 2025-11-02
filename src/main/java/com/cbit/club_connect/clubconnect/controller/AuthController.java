@@ -4,11 +4,12 @@ import com.cbit.club_connect.clubconnect.entity.User;
 import com.cbit.club_connect.clubconnect.entity.Club;
 import com.cbit.club_connect.clubconnect.Repository.UserRepository;
 import com.cbit.club_connect.clubconnect.Repository.ClubRepository;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,7 +38,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email and password required");
         }
 
-        // Check duplicate email across both tables
         if (userRepository.findByEmailIgnoreCase(email).isPresent() ||
                 clubRepository.findByClubEmailIgnoreCase(email).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already registered");
@@ -52,37 +52,40 @@ public class AuthController {
         u.setStatus("ACTIVE");
         userRepository.save(u);
 
-        return ResponseEntity.ok(new LoginResponse(u.getId(), null, first.isEmpty() ? email : first, "STUDENT"));
+        return ResponseEntity.ok(new LoginResponse(
+                u.getId(), null, first.isEmpty() ? email : first, "STUDENT", "/student-dashboard.html"
+        ));
     }
 
     /* ========================= CLUB SIGNUP ========================= */
     @PostMapping("/signup/club")
     public ResponseEntity<?> clubSignup(@RequestBody Club body) {
-        Long clubId = body.getId();
         String name = safe(body.getName());
         String email = norm(body.getClubEmail());
         String pw = safe(body.getClubPassword());
         String desc = safe(body.getDescription());
 
-        if (email.isEmpty() || pw.isEmpty() || name.isEmpty() || clubId == null) {
-            return ResponseEntity.badRequest().body("Club ID, name, email, and password required");
+        if (email.isEmpty() || pw.isEmpty() || name.isEmpty()) {
+            return ResponseEntity.badRequest().body("Name, email, and password required");
         }
 
-        // Prevent duplicates
         if (clubRepository.findByClubEmailIgnoreCase(email).isPresent() ||
                 userRepository.findByEmailIgnoreCase(email).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already registered");
         }
 
         Club c = new Club();
-        c.setId(clubId);
         c.setName(name);
         c.setClubEmail(email);
         c.setClubPassword(pw);
         c.setDescription(desc);
         clubRepository.save(c);
 
-        return ResponseEntity.ok(new LoginResponse(null, c.getId(), c.getName(), "CLUB"));
+        String redirect = "/club-dashboard.html?clubId=" + c.getId()
+                + "&clubName=" + URLEncoder.encode(c.getName() == null ? "" : c.getName(), StandardCharsets.UTF_8);
+        return ResponseEntity.ok(new LoginResponse(
+                null, c.getId(), c.getName(), "CLUB", redirect
+        ));
     }
 
     /* ========================= LOGIN (BOTH) ========================= */
@@ -95,23 +98,27 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email and password required");
         }
 
-        // Try Club first
         Optional<Club> clubOpt = clubRepository.findByClubEmailIgnoreCase(email);
         if (clubOpt.isPresent()) {
             Club c = clubOpt.get();
             if (pw.equals(c.getClubPassword())) {
-                return ResponseEntity.ok(new LoginResponse(null, c.getId(), c.getName(), "CLUB"));
+                String redirect = "/club-dashboard.html?clubId=" + c.getId()
+                        + "&clubName=" + URLEncoder.encode(c.getName() == null ? "" : c.getName(), StandardCharsets.UTF_8);
+                return ResponseEntity.ok(new LoginResponse(
+                        null, c.getId(), c.getName(), "CLUB", redirect
+                ));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong club password");
             }
         }
 
-        // Try Student
         Optional<User> userOpt = userRepository.findByEmailIgnoreCase(email);
         if (userOpt.isPresent()) {
             User u = userOpt.get();
             if (Objects.equals(u.getPassword(), pw)) {
-                return ResponseEntity.ok(new LoginResponse(u.getId(), null, u.getFirstName(), "STUDENT"));
+                return ResponseEntity.ok(new LoginResponse(
+                        u.getId(), null, u.getFirstName(), "STUDENT", "/student-dashboard.html"
+                ));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong user password");
             }
@@ -136,18 +143,21 @@ public class AuthController {
         private Long clubId;
         private String name;
         private String role;
+        private String redirect;
 
-        public LoginResponse(Long userId, Long clubId, String name, String role) {
+        public LoginResponse(Long userId, Long clubId, String name, String role, String redirect) {
             this.userId = userId;
             this.clubId = clubId;
             this.name = name;
             this.role = role;
+            this.redirect = redirect;
         }
 
         public Long getUserId() { return userId; }
         public Long getClubId() { return clubId; }
         public String getName() { return name; }
         public String getRole() { return role; }
+        public String getRedirect() { return redirect; }
     }
 
     private String norm(String s) { return s == null ? "" : s.trim().toLowerCase(); }

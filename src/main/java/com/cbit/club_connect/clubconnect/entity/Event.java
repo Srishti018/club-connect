@@ -1,5 +1,5 @@
 package com.cbit.club_connect.clubconnect.entity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +25,9 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Club club;
+
 
     private String venue;
 
@@ -37,6 +39,8 @@ public class Event {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+
 
     // Getters and setters
     public Long getId() { return id; }

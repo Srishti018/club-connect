@@ -2,82 +2,236 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>CBIT – Student Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Upcoming Events – CBIT Club Connect</title>
     <style>
         :root {
-          --bg:#0f1b2b; --panel:#12233a; --ink:#e8f0ff; --muted:#a9b7d1;
-          --accent:#1e66ff; --accent-2:#2dd4bf; --danger:#ef4444; --ok:#10b981;
-          --border:rgba(255,255,255,.08);
-        }
-        *{box-sizing:border-box}
-        body{
-          margin:0; background:var(--bg); color:var(--ink);
-          font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial;
-        }
-        .wrap{max-width:1200px; margin:28px auto; padding:0 20px}
-        header h1{margin:0 0 6px; font-size:32px; color:var(--accent);}
-        header small{color:var(--muted)}
-        .grid{display:grid; grid-template-columns:360px 1fr; gap:24px; margin-top:24px}
-        @media (max-width:980px){.grid{grid-template-columns:1fr}}
+          --accent: #14b8a6;
+          --accent-hover: #0d9488;
+          --radius: 16px;
+          --transition: all 0.3s ease;
+          --shadow-3d: 0 10px 20px rgba(0,0,0,0.12), 0 6px 8px rgba(0,0,0,0.08);
 
-        .card{background:var(--panel); border:1px solid var(--border);
-          border-radius:14px; padding:18px 18px 8px}
-        .card h2{margin:0 0 12px; font-size:22px; color:var(--accent);}
-        .subtle{color:var(--muted)}
-
-        .club{padding:12px 8px; border-bottom:1px dashed var(--border); cursor:pointer; transition:background .2s ease;}
-        .club:hover{background:rgba(30,102,255,.1);}
-        .club-name{font-weight:700}
-        .club-desc{color:var(--muted); margin-top:4px; font-size:14px}
-
-        .evt{padding:16px; border:1px solid var(--border); border-radius:12px;
-          margin:12px 0; background:rgba(255,255,255,.02); cursor:pointer;
-          transition:background .2s ease;}
-        .evt:hover{background:rgba(30,102,255,.1);}
-        .evt-title{font-weight:800; font-size:20px; margin:0 0 8px}
-        .evt-meta{color:var(--muted); font-size:14px; display:flex; gap:18px; flex-wrap:wrap}
-        .row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px}
-        .btn{
-          appearance:none; border:0; background:var(--accent); color:white;
-          padding:10px 16px; border-radius:10px; font-weight:700;
-          cursor:pointer; transition:transform .06s ease,opacity .2s;
+          /* Light theme */
+          --bg: #f5f8fa;
+          --panel: #ffffff;
+          --ink: #0f172a;
+          --muted: #6b7280;
+          --border: rgba(0,0,0,0.08);
         }
-        .btn:active{transform:translateY(1px)}
-        .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--border)}
-        .empty{color:var(--muted); padding:18px 12px}
-        .error{background:rgba(239,68,68,.12); border:1px dashed rgba(239,68,68,.5);
-          color:#fecaca; padding:12px 14px; border-radius:10px; margin:12px 0}
-        .header-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-        .count{color:var(--muted); font-size:14px}
+
+        /* Dark theme */
+        [data-theme="dark"] {
+          --bg: #0f1b2b;
+          --panel: #12233a;
+          --ink: #e8f0ff;
+          --muted: #a9b7d1;
+          --border: rgba(255,255,255,0.08);
+          --shadow-3d: 0 12px 20px rgba(0,0,0,0.5), 0 8px 10px rgba(0,0,0,0.3);
+        }
+
+        * { box-sizing: border-box; transition: var(--transition); }
+        body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--ink);
+          font: 16px/1.5 system-ui, -apple-system, "poppins", Roboto, Helvetica, Arial;
+        }
+        .wrap { max-width: 1200px; margin: 28px auto; padding: 0 20px; }
+
+        header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          margin-bottom: 20px;
+        }
+        header h1 {
+          margin: 0;
+          font-size: 36px;
+          font-weight: 800;
+          color: var(--accent);
+          text-shadow: 0 3px 8px rgba(20, 184, 166, 0.3);
+          letter-spacing: 1px;
+        }
+        header small {
+          display: block;
+          font-weight: 800;
+          letter-spacing: 2px;
+          color: var(--muted);
+          margin-top: 6px;
+          text-transform: uppercase;
+        }
+
+        .theme-toggle {
+          background: var(--panel);
+          border: 1px solid var(--border);
+          border-radius: 50%;
+          width: 44px; height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          font-size: 20px;
+          color: var(--ink);
+          box-shadow: var(--shadow-3d);
+          transition: var(--transition);
+        }
+        .theme-toggle:hover { transform: translateY(-2px) scale(1.05); }
+
+        .grid {
+          display: grid;
+          grid-template-columns: 360px 1fr;
+          gap: 24px;
+        }
+        @media (max-width:980px){ .grid{ grid-template-columns:1fr; } }
+
+        .card {
+          background: var(--panel);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 24px 20px 16px;
+          box-shadow: var(--shadow-3d);
+        }
+        .card h2 {
+          margin: 0 0 12px;
+          font-size: 24px;
+          font-weight: 700;
+          color: var(--accent);
+          text-shadow: 0 2px 6px rgba(20,184,166,0.3);
+        }
+        .subtle { color: var(--muted); }
+
+        .club {
+          padding: 14px 12px;
+          border-bottom: 1px dashed var(--border);
+          cursor: pointer;
+          border-radius: 10px;
+          transition: var(--transition);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .club:hover {
+          background: rgba(20,184,166,0.1);
+          transform: translateY(-2px);
+        }
+        .club-name { font-weight: 600; font-size: 17px; }
+        .club-desc { color: var(--muted); margin-top: 4px; font-size: 14px; }
+
+        .evt {
+          padding: 18px 20px;
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          margin: 14px 0;
+          background: var(--panel);
+          box-shadow: var(--shadow-3d);
+          cursor: pointer;
+          transition: var(--transition);
+        }
+        .evt:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(20,184,166,0.3);
+        }
+        .evt-title {
+          font-weight: 700;
+          font-size: 20px;
+          margin: 0 0 8px;
+        }
+        .evt-meta {
+          color: var(--muted);
+          font-size: 14px;
+          display: flex;
+          gap: 18px;
+          flex-wrap: wrap;
+        }
+        .row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: 12px;
+        }
+        .btn {
+          appearance: none;
+          border: 0;
+          background: linear-gradient(145deg, var(--accent), var(--accent-hover));
+          color: white;
+          padding: 10px 16px;
+          border-radius: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: var(--transition);
+          box-shadow: var(--shadow-3d);
+        }
+        .btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 24px rgba(20,184,166,0.4);
+        }
+        .btn:active { transform: translateY(2px) scale(0.98); }
+        .btn.ghost {
+          background: transparent;
+          color: var(--ink);
+          border: 1px solid var(--border);
+          box-shadow: none;
+        }
+        .btn.ghost:hover {
+          background: rgba(20,184,166,0.1);
+        }
+
+        .empty {
+          color: var(--muted);
+          padding: 20px 12px;
+          text-align: center;
+          font-weight: 500;
+        }
 
         /* Modal */
         .modal {
-          position:fixed; top:0; left:0; width:100%; height:100%;
-          background:rgba(0,0,0,0.6); display:none; align-items:center;
-          justify-content:center; z-index:1000;
+          position: fixed; inset: 0;
+          background: rgba(0,0,0,0.6);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
         }
         .modal-content {
-          background:var(--panel); border-radius:12px; padding:24px; max-width:600px;
-          box-shadow:0 0 20px rgba(0,0,0,0.4); position:relative;
+          background: var(--panel);
+          border-radius: 14px;
+          padding: 26px;
+          max-width: 600px;
+          box-shadow: var(--shadow-3d);
+          position: relative;
+          animation: fadeIn 0.3s ease;
         }
-        .modal h3{margin-top:0; color:var(--accent);}
-        .modal p{color:var(--ink);}
+        .modal h3 { margin-top: 0; color: var(--accent); font-weight: 700; }
+        .modal p { color: var(--ink); }
         .close-btn {
-          background:transparent; color:var(--muted); border:0; font-size:20px;
-          position:absolute; top:20px; right:30px; cursor:pointer;
+          background: transparent;
+          color: var(--muted);
+          border: 0;
+          font-size: 24px;
+          position: absolute;
+          top: 16px; right: 24px;
+          cursor: pointer;
+        }
+        .close-btn:hover { color: var(--accent); }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 <div class="wrap">
     <header>
-        <h1>Student Dashboard — Upcoming Events</h1>
-        <small class="subtle">CBIT-Club-Connect</small>
+        <div>
+            <h1>UPCOMING EVENTS</h1>
+            <small>CBIT CLUB CONNECT</small>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
     </header>
 
     <section class="grid">
-        <!-- Clubs Section -->
         <aside class="card" id="clubsCard">
             <div class="header-row">
                 <h2>Clubs</h2>
@@ -86,18 +240,13 @@
             <div id="clubsList" class="list"><div class="empty">Loading clubs…</div></div>
         </aside>
 
-        <!-- Events Section -->
         <main class="card">
-            <div class="header-row">
-                <h2>Upcoming Events</h2>
-                <div class="count"><span id="eventsCount">0</span> events</div>
-            </div>
+            <h2>Events</h2>
             <div id="eventsHost"><div class="empty">Loading events…</div></div>
         </main>
     </section>
 </div>
 
-<!-- Modal for Event Description -->
 <div class="modal" id="eventModal">
     <div class="modal-content">
         <button class="close-btn" id="closeModal">&times;</button>
@@ -107,40 +256,56 @@
 </div>
 
 <script>
-    const clubsHost = document.getElementById('clubsList');
-    const eventsHost = document.getElementById('eventsHost');
-    const eventsCount = document.getElementById('eventsCount');
-    const btnAllEvents = document.getElementById('btnAllEvents');
-    const modal = document.getElementById('eventModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDescription = document.getElementById('modalDescription');
-    const closeModal = document.getElementById('closeModal');
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
 
-    let allEvents = [];
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      body.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      body.setAttribute('data-theme', 'dark');
+      themeToggle.textContent = '☀️';
+    }
 
-    const fmt = new Intl.DateTimeFormat(undefined, {dateStyle:'medium', timeStyle:'short'});
-    const toLocal = dt => { try { return fmt.format(new Date(dt)); } catch { return dt || ''; } };
-    const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls)e.className=cls; if(text)e.textContent=text; return e; };
-    const showError = (host, text) => { host.innerHTML=''; host.appendChild(el('div','error',text)); };
+    themeToggle.addEventListener('click', () => {
+      const current = body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+
+    /* ==== Dashboard Logic ==== */
+    const clubsHost=document.getElementById('clubsList');
+    const eventsHost=document.getElementById('eventsHost');
+    const btnAllEvents=document.getElementById('btnAllEvents');
+    const modal=document.getElementById('eventModal');
+    const modalTitle=document.getElementById('modalTitle');
+    const modalDescription=document.getElementById('modalDescription');
+    const closeModal=document.getElementById('closeModal');
+
+    let allEvents=[];
+    const fmt=new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'short'});
+    const toLocal=dt=>{try{return fmt.format(new Date(dt));}catch{return dt||'';}};
+    const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;return e;};
+    const showError=(host,text)=>{host.innerHTML=`<div class="empty">${text}</div>`;};
 
     function renderClubs(clubs){
       clubsHost.innerHTML='';
-      if(!clubs?.length){ clubsHost.appendChild(el('div','empty','No clubs configured.')); return; }
-
+      if(!clubs?.length){clubsHost.appendChild(el('div','empty','No clubs available.'));return;}
       clubs.forEach(c=>{
         const row=el('div','club');
         row.appendChild(el('div','club-name',c.name||'Club'));
         row.appendChild(el('div','club-desc',c.description||''));
-        row.addEventListener('click', ()=> filterEventsByClub(c.name));
+        row.addEventListener('click',()=>filterEventsByClub(c.name));
         clubsHost.appendChild(row);
       });
     }
 
     function renderEvents(list){
       eventsHost.innerHTML='';
-      eventsCount.textContent=list?.length??0;
-      if(!list?.length){ eventsHost.appendChild(el('div','empty','No upcoming events.')); return; }
-
+      if(!list?.length){eventsHost.appendChild(el('div','empty','No upcoming events.'));return;}
       list.forEach(e=>{
         const card=el('div','evt');
         card.addEventListener('click',()=>{
@@ -148,22 +313,17 @@
           modalTitle.textContent=e.title||'Event';
           modalDescription.textContent=e.description||'No description available.';
         });
-
-        const title=el('div','evt-title',e.title||'Event');
-        card.appendChild(title);
-
+        card.appendChild(el('div','evt-title',e.title||'Event'));
         const meta=el('div','evt-meta');
-        if(e.dateTime) meta.appendChild(el('span','',`Date: ${toLocal(e.dateTime)}`));
-        if(e.venue) meta.appendChild(el('span','',`Venue: ${e.venue}`));
-        if(e.clubName) meta.appendChild(el('span','',`Club: ${e.clubName}`));
-        if(e.activityPoints!=null) meta.appendChild(el('span','',`Activity Points: ${e.activityPoints}`));
+        if(e.dateTime)meta.appendChild(el('span','',`Date: ${toLocal(e.dateTime)}`));
+        if(e.venue)meta.appendChild(el('span','',`Venue: ${e.venue}`));
+        if(e.clubName)meta.appendChild(el('span','',`Club: ${e.clubName}`));
         card.appendChild(meta);
-
         const actions=el('div','row');
         const reg=el('button','btn','Register');
         reg.addEventListener('click',(ev)=>{
           ev.stopPropagation();
-          if(!e.id){ alert('Invalid event.'); return; }
+          if(!e.id){alert('Invalid event.');return;}
           window.location.href=`registration.html?eventId=${encodeURIComponent(e.id)}`;
         });
         actions.appendChild(reg);
@@ -172,37 +332,30 @@
       });
     }
 
-    function filterEventsByClub(clubName){
-      const filtered = allEvents.filter(e => e.clubName === clubName);
-      renderEvents(filtered);
-    }
+    function filterEventsByClub(clubName){ renderEvents(allEvents.filter(e=>e.clubName===clubName)); }
 
     async function loadClubs(){
       try{
         const r=await fetch('/api/public/clubs');
-        if(!r.ok) throw new Error(`HTTP ${r.status}`);
+        if(!r.ok)throw new Error(`HTTP ${r.status}`);
         renderClubs(await r.json());
-      }catch(err){ showError(clubsHost,`Failed to load clubs: ${err.message}`); }
+      }catch(err){showError(clubsHost,`Failed to load clubs: ${err.message}`);}
     }
-
     async function loadEvents(){
       try{
         const r=await fetch('/api/public/events');
-        if(!r.ok) throw new Error(`HTTP ${r.status}`);
-        allEvents = await r.json();
+        if(!r.ok)throw new Error(`HTTP ${r.status}`);
+        allEvents=await r.json();
         renderEvents(allEvents);
-      }catch(err){
-        showError(eventsHost,`Failed to load upcoming events: ${err.message}`);
-        eventsCount.textContent=0;
-      }
+      }catch(err){showError(eventsHost,`Failed to load events: ${err.message}`);}
     }
 
     closeModal.addEventListener('click',()=>modal.style.display='none');
-    modal.addEventListener('click',(e)=>{if(e.target===modal)modal.style.display='none';});
+    modal.addEventListener('click',e=>{if(e.target===modal)modal.style.display='none';});
     btnAllEvents.addEventListener('click',()=>renderEvents(allEvents));
-
     loadClubs();
     loadEvents();
 </script>
 </body>
 </html>
+

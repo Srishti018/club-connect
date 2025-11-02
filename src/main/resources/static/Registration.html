@@ -3,107 +3,170 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Event Registration</title>
+    <title>Event Registration | CBIT Club Connect</title>
     <style>
         :root {
-          --bg: #f0f5ff;
+          --accent: #14b8a6;
+          --accent-hover: #0d9488;
+          --radius: 16px;
+          --transition: all 0.3s ease;
+          --shadow-3d: 0 8px 20px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08);
+
+          /* Light */
+          --bg: #f0f6ff;
           --card: #ffffff;
-          --text: #0f172a;
+          --ink: #0f172a;
           --muted: #475569;
-          --line: #e2e8f0;
-          --primary: #2563eb;
-          --primary-hover: #1d4ed8;
-          --chip-bg: #dbeafe;
-          --chip-border: #93c5fd;
-          --ok: #0f5132;
-          --okb: #d1e7dd;
-          --err: #842029;
-          --errb: #f8d7da;
-        }
-        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-        body { background: var(--bg); margin: 0; color: var(--text); }
-        .wrap { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-
-        .card {
-          background: var(--card);
-          border-radius: 18px;
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.1);
-          overflow: hidden;
+          --line: #dce3f0;
         }
 
-        .eventbar {
-          background: var(--primary);
-          color: white;
-          padding: 20px 24px;
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-        .eventbar h1 { margin: 0; font-size: 22px; }
-        .eventbar .meta { font-size: 14px; opacity: 0.9; }
-        .badge {
-          background: var(--chip-bg);
-          color: var(--primary);
-          padding: 6px 12px;
-          border-radius: 12px;
-          font-weight: 600;
-          border: 1px solid var(--chip-border);
+        /* Dark */
+        [data-theme="dark"] {
+          --bg: #0f172a;
+          --card: #1e293b;
+          --ink: #e2e8f0;
+          --muted: #94a3b8;
+          --line: #334155;
+          --shadow-3d: 0 10px 24px rgba(0,0,0,0.45), 0 6px 10px rgba(0,0,0,0.3);
         }
 
-        .panel { padding: 28px; }
-        h2 { margin-top: 0; color: var(--primary); }
-        form {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 18px;
+        *{box-sizing:border-box;transition:var(--transition);}
+        body{
+          margin:0;
+          background:var(--bg);
+          color:var(--ink);
+          font:16px/1.5 'Inter', system-ui, sans-serif;
         }
-        label { font-weight: 600; display: block; margin-bottom: 6px; }
-        input, select {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid var(--line);
-          border-radius: 8px;
-          font-size: 15px;
+        .wrap{
+          max-width:900px;
+          margin:40px auto;
+          padding:0 20px;
         }
-        input:focus, select:focus {
-          border-color: var(--primary);
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-          outline: none;
+        a.back{
+          text-decoration:none;
+          display:inline-flex;
+          align-items:center;
+          color:var(--accent);
+          font-weight:700;
+          margin-bottom:18px;
+          transition:var(--transition);
         }
-        .full { grid-column: 1 / -1; }
-        .btn {
-          background: var(--primary);
-          color: #fff;
-          border: none;
-          padding: 12px 16px;
-          border-radius: 10px;
-          font-weight: 700;
-          cursor: pointer;
+        a.back:hover{opacity:0.8;transform:translateX(-2px);}
+
+        .card{
+          background:var(--card);
+          border-radius:var(--radius);
+          box-shadow:var(--shadow-3d);
+          overflow:hidden;
         }
-        .btn:hover { background: var(--primary-hover); }
-        .banner {
-          padding: 12px 14px;
-          border-radius: 8px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          display: none;
+        .eventbar{
+          background:linear-gradient(90deg,var(--accent),var(--accent-hover));
+          color:#fff;
+          padding:22px 26px;
+          display:flex;
+          justify-content:space-between;
+          flex-wrap:wrap;
+          align-items:center;
         }
-        .banner.ok { background: var(--okb); color: var(--ok); display: block; }
-        .banner.err { background: var(--errb); color: var(--err); display: block; }
-        .back {
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          margin-bottom: 18px;
-          color: var(--primary);
-          font-weight: 700;
+        .eventbar h1{
+          margin:0;
+          font-size:24px;
+          font-weight:800;
+          letter-spacing:0.5px;
         }
+        .eventbar .meta{font-size:14px;opacity:0.9;}
+
+        .badge{
+          background:rgba(255,255,255,0.15);
+          color:#fff;
+          padding:6px 12px;
+          border-radius:12px;
+          font-weight:600;
+          backdrop-filter:blur(8px);
+        }
+
+        .panel{padding:30px;}
+        h2{margin-top:0;color:var(--accent);}
+        form{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:18px;
+        }
+        label{font-weight:600;display:block;margin-bottom:6px;}
+        input,select{
+          width:100%;
+          padding:10px;
+          border:1px solid var(--line);
+          border-radius:8px;
+          font-size:15px;
+          background:var(--card);
+          color:var(--ink);
+          box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);
+        }
+        input:focus,select:focus{
+          border-color:var(--accent);
+          box-shadow:0 0 0 3px rgba(20,184,166,0.25);
+          outline:none;
+        }
+        .full{grid-column:1/-1;}
+        .btn{
+          background:linear-gradient(145deg,var(--accent),var(--accent-hover));
+          color:#fff;
+          border:none;
+          padding:12px 18px;
+          border-radius:10px;
+          font-weight:700;
+          cursor:pointer;
+          box-shadow:var(--shadow-3d);
+          transition:var(--transition);
+        }
+        .btn:hover{
+          transform:translateY(-2px);
+          box-shadow:0 12px 24px rgba(20,184,166,0.4);
+        }
+        .banner{
+          padding:12px 14px;
+          border-radius:8px;
+          font-weight:600;
+          margin-bottom:16px;
+          display:none;
+        }
+        .banner.ok{
+          background:#d1fae5;
+          color:#065f46;
+          display:block;
+        }
+        .banner.err{
+          background:#fee2e2;
+          color:#991b1b;
+          display:block;
+        }
+
+        /* Theme toggle */
+        .theme-toggle{
+          position:fixed;
+          top:20px;
+          right:20px;
+          width:44px;height:44px;
+          border-radius:50%;
+          border:none;
+          cursor:pointer;
+          background:var(--card);
+          color:var(--ink);
+          font-size:20px;
+          box-shadow:var(--shadow-3d);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .theme-toggle:hover{transform:translateY(-2px) scale(1.05);}
     </style>
 </head>
 <body>
+<button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
+
 <div class="wrap">
-    <a class="back" href="student-dashboard.html">← Back to Dashboard</a>
+    <a class="back" href="student-dashboard.html">← Back</a>
 
     <section class="card">
         <div class="eventbar">
@@ -145,28 +208,17 @@
                     <label for="branch">Branch</label>
                     <select id="branch">
                         <option value="">Select branch</option>
-                        <option value="CSE">CSE</option>
-                        <option value="CSM">CSM</option>
-                        <option value="AIML">AIML</option>
-                        <option value="AIDS">AIDS</option>
-                        <option value="IT">IT</option>
-                        <option value="ECE">ECE</option>
-                        <option value="EEE">EEE</option>
-                        <option value="MECH">MECH</option>
-                        <option value="CIVIL">CIVIL</option>
-                        <option value="CHEM">CHEM</option>
-                        <option value="BIOTECH">BIOTECH</option>
+                        <option>CSE</option><option>CSM</option><option>CET</option><option>AIML</option>
+                        <option>AIDS</option><option>IT</option><option>ECE</option>
+                        <option>EEE</option><option>MECH</option><option>CIVIL</option>
+                        <option>CHEM</option><option>BIOTECH</option>
                     </select>
                 </div>
                 <div class="full">
                     <label for="section">Section</label>
                     <select id="section">
                         <option value="">Select section</option>
-                        <option value="1">Section 1</option>
-                        <option value="2">Section 2</option>
-                        <option value="3">Section 3</option>
-                        <option value="4">Section 4</option>
-                        <option value="5">Section 5</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     </select>
                 </div>
                 <div class="full">
@@ -178,91 +230,80 @@
 </div>
 
 <script>
-    const $ = s => document.querySelector(s);
-    const banner = $('#banner');
-    const eventId = new URLSearchParams(location.search).get('eventId');
-
-    function showBanner(msg, type) {
-      banner.textContent = msg;
-      banner.className = 'banner ' + (type === 'ok' ? 'ok' : 'err');
+    const body=document.body;
+    const toggle=document.getElementById('themeToggle');
+    const savedTheme=localStorage.getItem('theme');
+    if(savedTheme){
+      body.setAttribute('data-theme',savedTheme);
+      toggle.textContent=savedTheme==='dark'?'☀️':'🌙';
+    }else if(window.matchMedia('(prefers-color-scheme: dark)').matches){
+      body.setAttribute('data-theme','dark');
+      toggle.textContent='☀️';
     }
-
-    async function getJson(url) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    }
-
-    async function loadEvent() {
-      if (!eventId) {
-        $('#evtTitle').textContent = 'Invalid event';
-        return showBanner('Missing eventId in URL', 'err');
-      }
-      try {
-        const events = await getJson('/api/public/events');
-        const evt = events.find(e => e.id == eventId);
-        if (!evt) throw new Error('Not found');
-
-        $('#evtTitle').textContent = evt.title || evt.name;
-        $('#evtMeta').textContent = `${evt.dateTime || evt.startAt || ''} | ${evt.venue || ''} | ${evt.clubName || ''}`;
-        if (evt.activityPoints) {
-          const badge = $('#evtBadge');
-          badge.textContent = `Activity Points: ${evt.activityPoints}`;
-          badge.style.display = 'inline-block';
-        }
-        window._evt = evt;
-      } catch (err) {
-        showBanner('Could not load event details', 'err');
-      }
-    }
-
-    $('#registrationForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = $('#fullName').value.trim();
-      const email = $('#email').value.trim();
-      const roll = $('#roll').value.trim();
-      const year = $('#year').value;
-      const branch = $('#branch').value;
-      const section = $('#section').value;
-
-      if (!eventId) return showBanner('Invalid event.', 'err');
-      if (!name || !roll) return showBanner('Please fill all required fields.', 'err');
-
-      const payload = {
-        eventId: Number(eventId),
-        eventName: window._evt?.title || window._evt?.name || null,
-        name,
-        fullName: name,
-        email,
-        rollNum: roll,
-        roll,
-        yearOfStudy: year ? Number(year) : null,
-        branch,
-        section
-      };
-
-      const btn = $('#submitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Submitting...';
-
-      try {
-        const res = await fetch('/api/public/registrations', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        });
-        const txt = await res.text();
-        if (!res.ok) throw new Error(txt || 'HTTP ' + res.status);
-        showBanner('Registration successful!', 'ok');
-      } catch (err) {
-        showBanner('Registration failed: ' + err.message, 'err');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Submit Registration';
-      }
+    toggle.addEventListener('click',()=>{
+      const current=body.getAttribute('data-theme');
+      const next=current==='dark'?'light':'dark';
+      body.setAttribute('data-theme',next);
+      localStorage.setItem('theme',next);
+      toggle.textContent=next==='dark'?'☀️':'🌙';
     });
 
+    const $=s=>document.querySelector(s);
+    const banner=$('#banner');
+    const eventId=new URLSearchParams(location.search).get('eventId');
+
+    function showBanner(msg,type){
+      banner.textContent=msg;
+      banner.className='banner '+(type==='ok'?'ok':'err');
+    }
+    async function getJson(url){
+      const res=await fetch(url);
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      return res.json();
+    }
+    async function loadEvent(){
+      if(!eventId){
+        $('#evtTitle').textContent='Invalid event';
+        return showBanner('Missing eventId','err');
+      }
+      try{
+        const events=await getJson('/api/public/events');
+        const evt=events.find(e=>e.id==eventId);
+        if(!evt)throw new Error('Not found');
+        $('#evtTitle').textContent=evt.title||evt.name;
+        $('#evtMeta').textContent=`${evt.dateTime||''} | ${evt.venue||''} | ${evt.clubName||''}`;
+        if(evt.activityPoints){
+          const badge=$('#evtBadge');
+          badge.textContent=`Activity Points: ${evt.activityPoints}`;
+          badge.style.display='inline-block';
+        }
+        window._evt=evt;
+      }catch(err){showBanner('Could not load event','err');}
+    }
+    $('#registrationForm').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const name=$('#fullName').value.trim();
+      const email=$('#email').value.trim();
+      const roll=$('#roll').value.trim();
+      const year=$('#year').value;
+      const branch=$('#branch').value;
+      const section=$('#section').value;
+      if(!eventId)return showBanner('Invalid event.','err');
+      if(!name||!roll)return showBanner('Please fill all required fields.','err');
+
+      const payload={eventId:Number(eventId),eventName:window._evt?.title||window._evt?.name||null,name,fullName:name,email,rollNum:roll,yearOfStudy:year?Number(year):null,branch,section};
+      const btn=$('#submitBtn');btn.disabled=true;btn.textContent='Submitting...';
+      try{
+        const res=await fetch('/api/public/registrations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const txt=await res.text();
+        if(!res.ok)throw new Error(txt||'HTTP '+res.status);
+        showBanner('Registration successful!','ok');
+      }catch(err){showBanner('Registration failed: '+err.message,'err');}
+      finally{btn.disabled=false;btn.textContent='Submit Registration';}
+    });
     loadEvent();
 </script>
 </body>
 </html>
+
+

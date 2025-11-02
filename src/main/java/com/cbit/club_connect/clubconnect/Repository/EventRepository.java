@@ -10,4 +10,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByStartAtAfterOrderByStartAtAsc(LocalDateTime after);
     List<Event> findByClubIdOrderByStartAtAsc(Long clubId);
     List<Event> findByClubIdAndStartAtAfterOrderByStartAtAsc(Long clubId, LocalDateTime after);
+    List<Event> findByClubIdAndStartAtBeforeOrderByStartAtDesc(Long clubId, LocalDateTime before);
+
 }

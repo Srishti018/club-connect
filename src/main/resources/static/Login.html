@@ -1,119 +1,280 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Club Connect</title>
     <style>
-        :root { --bg:#0b1020; --panel:#0f1629; --field:#151c2f; --muted:#9aa3b2; --fg:#e7eaf0; --accent:#2563eb; }
-        * { box-sizing: border-box; }
+        :root {
+          --transition: 0.3s ease;
+          --radius: 16px;
+
+          /* ☀️ Light Theme */
+          --bg: linear-gradient(145deg, #e0f7f6, #ffffff);
+          --panel: rgba(255, 255, 255, 0.7);
+          --text: #0f172a;
+          --muted: #64748b;
+          --accent: #0d9488;
+          --border: rgba(0, 0, 0, 0.05);
+          --shadow: 0 6px 16px rgba(13, 148, 136, 0.15), 0 8px 24px rgba(0, 0, 0, 0.08);
+          --glow: 0 0 25px rgba(13, 148, 136, 0.25);
+          --input-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        body.dark {
+          /* 🌙 Dark Theme */
+          --bg: radial-gradient(circle at top, #0b1324, #07101f);
+          --panel: rgba(18, 28, 47, 0.7);
+          --text: #f3f4f6;
+          --muted: #9ca3af;
+          --accent: #14b8a6;
+          --border: rgba(255, 255, 255, 0.08);
+          --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+          --glow: 0 0 20px rgba(20, 184, 166, 0.3);
+          --input-bg: rgba(30, 41, 59, 0.6);
+        }
+
+        * {
+          box-sizing: border-box;
+          transition: all var(--transition);
+        }
+
         body {
-          margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-          background: radial-gradient(1000px 500px at 20% -10%, #1e3a8a33, transparent),
-          radial-gradient(900px 500px at 120% 20%, #065f4633, transparent),
-          var(--bg);
-          color: var(--fg); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+          margin: 0;
+          font-family: "Poppins", system-ui, sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          padding: 24px;
         }
+
         .card {
-          width:min(420px, 100%); background: var(--panel); border:1px solid #1e293b;
-          border-radius:18px; padding:28px 22px 22px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+          background: var(--panel);
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          width: min(400px, 90%);
+          padding: 40px 36px;
+          animation: fadeUp 0.6s ease forwards;
+          position: relative;
         }
-        h1 { text-align:center; margin:6px 0 16px; font-size:28px; }
-        label { display:block; margin:10px 0 6px; font-size:14px; color:#cdd6e3; }
+
+        @keyframes fadeUp {
+          0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        h1 {
+          text-align: center;
+          margin-bottom: 1.5rem;
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--accent);
+        }
+
+        label {
+          display: block;
+          margin-top: 1rem;
+          font-weight: 500;
+          font-size: 14px;
+          color: var(--text);
+        }
+
         input {
-          width:100%; padding:12px 12px; background: var(--field); border:1px solid #243144;
-          border-radius:12px; color:var(--fg); outline:none; transition:border .15s, box-shadow .15s;
+          width: 100%;
+          padding: 12px 14px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          margin-top: 5px;
+          background: var(--input-bg);
+          color: var(--text);
+          font-size: 15px;
+          outline: none;
+          transition: box-shadow 0.2s ease;
         }
-        input:focus { border-color:#35507a; box-shadow:0 0 0 4px #1e3a8a33; }
+
+        input:focus {
+          box-shadow: 0 0 0 2px var(--accent);
+        }
+
         .btn {
-          width:100%; margin-top:16px; padding:12px 14px; font-weight:600; font-size:15px;
-          border-radius:12px; border:none; background:linear-gradient(90deg, var(--accent), #1d4ed8);
-          color:white; cursor:pointer; transition:transform .05s ease;
+          margin-top: 1.5rem;
+          width: 100%;
+          padding: 14px 0;
+          background: linear-gradient(135deg, var(--accent), #0f766e);
+          border: none;
+          border-radius: var(--radius);
+          color: white;
+          font-weight: 600;
+          font-size: 16px;
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(13, 148, 136, 0.35);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .btn:active { transform: translateY(1px); }
-        .muted { margin-top:12px; text-align:center; color:var(--muted); font-size:14px; }
-        .muted a { color:#93c5fd; text-decoration:none; }
-        .muted a:hover { text-decoration:underline; }
-        .toast {
-          position: fixed; top:16px; right:16px; z-index:9999; padding:12px 14px; border-radius:10px;
-          background:#143b12; color:#d1fae5; border:1px solid #0f5132; display:none;
+
+        .btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 25px rgba(13, 148, 136, 0.45), var(--glow);
         }
-        .toast.error { background:#3b0b0b; color:#fee2e2; border-color:#7f1d1d; }
+
+        .btn:active {
+          transform: translateY(1px);
+          box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+        }
+
+        .links {
+          margin-top: 18px;
+          text-align: center;
+          font-size: 0.9rem;
+          color: var(--muted);
+        }
+
+        a {
+          color: var(--accent);
+          text-decoration: none;
+          font-weight: 500;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+
+        /* 🌗 Theme Toggle */
+        .theme-toggle {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: var(--panel);
+          border: 1px solid var(--border);
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: var(--shadow);
+          transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+          transform: rotate(10deg) scale(1.05);
+          box-shadow: var(--glow);
+        }
+
+        .theme-toggle svg {
+          width: 20px;
+          height: 20px;
+          fill: var(--accent);
+        }
     </style>
 </head>
 <body>
-<div class="toast" id="toast"></div>
 
 <div class="card">
-    <h1 id="formTitle">Login</h1>
+    <div class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 3a1 1 0 0 1 1 1v1.26A8 8 0 1 1 11 3.26V4a1 1 0 0 1 1-1z"/>
+        </svg>
+    </div>
+
+    <h1>Club Connect Login</h1>
     <form id="loginForm">
-        <label for="email">Email</label>
-        <input id="email" type="email" placeholder="you@college.edu" required>
+        <label>Email</label>
+        <input type="email" id="email" required />
 
-        <label for="password">Password</label>
-        <input id="password" type="password" placeholder="••••••••" required>
+        <label>Password</label>
+        <input type="password" id="password" required />
 
-        <button class="btn" type="submit">Login</button>
-        <div class="muted">Don’t have an account? <a id="signupLink" href="#">Sign up</a></div>
+        <button type="submit" class="btn">Login</button>
     </form>
+
+    <div class="links">
+        <p>New Student? <a href="/signup.html">Sign Up</a></p>
+        <p>New Club? <a href="/signup-club.html">Register Club</a></p>
+    </div>
 </div>
 
 <script>
-    const API = "http://localhost:8080";
-    const toast = document.getElementById('toast');
-    const role = new URLSearchParams(window.location.search).get('role') || 'student';
+    const API = "http://localhost:8080/api/auth/login";
 
-    // Update title and signup link based on role
-    const title = document.getElementById('formTitle');
-    const signupLink = document.getElementById('signupLink');
-    if (role === 'club') {
-      title.textContent = 'Login - Club Head';
-      signupLink.href = '/signup.html?role=club';
-    } else {
-      title.textContent = 'Login - Student';
-      signupLink.href = '/signup.html?role=student';
-    }
-
-    function showToast(msg, isError=false){
-      toast.textContent = msg;
-      toast.className = 'toast' + (isError ? ' error' : '');
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 2600);
-    }
-
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim().toLowerCase();
-      const password = document.getElementById('password').value.trim();
+
+      const data = {
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value.trim()
+      };
 
       try {
-        const res = await fetch(`${API}/api/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
         });
 
-        if (!res.ok) {
-          const msg = await res.text();
-          showToast(msg || 'Invalid credentials', true);
-          return;
-        }
+        if (res.ok) {
+          const body = await res.json();
 
-        const data = await res.json();
+          if (body.role === "CLUB") {
+            localStorage.setItem("clubId", body.clubId);
+            localStorage.setItem("clubName", body.name);
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userName");
+          } else if (body.role === "STUDENT") {
+            localStorage.setItem("userId", body.userId);
+            localStorage.setItem("userName", body.name);
+            localStorage.removeItem("clubId");
+            localStorage.removeItem("clubName");
+          }
 
-        // Route based on returned role
-        if (data.role === 'CLUB_HEAD') {
-          sessionStorage.setItem('clubId', data.clubId);
-          showToast('Welcome, Club Head!');
-          setTimeout(() => window.location.href = '/club-dashboard.html', 600);
+          window.location.href = body.redirect;
         } else {
-          showToast('Welcome, Student!');
-          setTimeout(() => window.location.href = '/student-dashboard.html', 600);
+          const text = await res.text();
+          alert("❌ " + text);
         }
       } catch (err) {
-        showToast('Network error. Is the API running on :8080?', true);
+        console.error(err);
+        alert("⚠️ Could not connect to server. Please try again.");
       }
     });
+
+    // 🌗 Theme toggle
+    const toggle = document.getElementById("themeToggle");
+    const icon = document.getElementById("themeIcon");
+    const body = document.body;
+
+    const storedTheme = localStorage.getItem("theme");
+    const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (storedTheme === "dark" || (!storedTheme && systemDark)) {
+      body.classList.add("dark");
+    }
+
+    function updateIcon() {
+      if (body.classList.contains("dark")) {
+        icon.innerHTML =
+          '<path d="M21.64 13.02A9 9 0 0 1 11 2.36a7 7 0 1 0 10.64 10.66z"/>';
+      } else {
+        icon.innerHTML =
+          '<path d="M12 3a1 1 0 0 1 1 1v1.26A8 8 0 1 1 11 3.26V4a1 1 0 0 1 1-1z"/>';
+      }
+    }
+
+    updateIcon();
+
+    toggle.onclick = () => {
+      body.classList.toggle("dark");
+      localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
+      updateIcon();
+    };
 </script>
 </body>
 </html>
+
+

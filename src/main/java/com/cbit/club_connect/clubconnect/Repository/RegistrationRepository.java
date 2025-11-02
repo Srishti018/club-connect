@@ -8,4 +8,6 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
 
     // Fetch the latest 20 registrations (sorted by ID descending)
     List<Registration> findTop20ByOrderByIdDesc();
+    List<Registration> findByEventId(Long eventId);
+
 }

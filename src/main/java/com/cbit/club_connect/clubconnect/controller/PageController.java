@@ -6,22 +6,33 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
+    // Redirects /signup → static signup.html
     @GetMapping("/signup")
     public String signupPage() {
-        return "signup"; // maps to templates/signup.html
+        return "forward:/signup.html";
     }
 
+    // Redirects /login → static login.html
     @GetMapping("/login")
     public String loginPage() {
-        return "login";  // maps to templates/login.html
+        return "forward:/login.html";
     }
 
-
+    // Handles /register.html → static registration.html
     @GetMapping("/register.html")
-    public String alias() { return "redirect:/registration.html"; }
+    public String alias() {
+        return "forward:/registration.html";
+    }
 
-    // optional: other pages
+    // Student Dashboard
     @GetMapping("/student-dashboard")
-    public String studentDashboard() { return "student-dashboard"; }
+    public String studentDashboard() {
+        return "forward:/student-dashboard.html";
+    }
 
+    // Club Dashboard (NEW)
+    @GetMapping("/club-dashboard")
+    public String clubDashboard() {
+        return "forward:/club-dashboard.html";
+    }
 }
